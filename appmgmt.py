@@ -1,7 +1,8 @@
 #!/usr/local/bin/python
 
 ########################
-# FABRIC TASK FILE
+# APP mgmt cli script
+# inspired by https://github.com/mikeyk/ec2-cli-tools
 # Author: Chenjun Shen
 ########################
 
