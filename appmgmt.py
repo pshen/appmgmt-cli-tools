@@ -84,7 +84,7 @@ def main(argv):
 
 	env.host_string=host
 	env.user=get_user(app)
-	jdk_bin=get_jdk_bin(app)
+	global jdk_bin=get_jdk_bin(app)
 	
 	if task=="jmap":
 		jmap(app)
