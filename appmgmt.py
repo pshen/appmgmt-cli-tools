@@ -17,7 +17,7 @@ from sys import stderr
 from fabric.api import run,get,env
 
 # SET SSH PRIVATE KEY LOCATION
-env.key_filename="/root/.ssh/id_rsa"
+env.key_filename="/home/appmgmt/.ssh/id_rsa"
 
 # APP<->USER MAPPING
 APP_USER_MAPPING = {'PAS':'pas', 'PECENG':'pec'}
