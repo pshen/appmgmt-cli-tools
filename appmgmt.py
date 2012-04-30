@@ -68,10 +68,6 @@ def main(argv):
         	usage()
         	sys.exit(2)
 
-	host=[]
-	app=""
-	task=""
-
 	for opt, arg in opts:
         	if opt in ("-h", "--help"):
             		usage()
