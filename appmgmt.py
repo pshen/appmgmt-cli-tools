@@ -52,7 +52,8 @@ def netstat(app):
 	run('/bin/netstat -anp | grep `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
 
 def view(app, path):
-	run('/bin/cat /opt/as/APP/%s/%s' % (app, path))
+	file_path="/opt/as/APP/%s/%s" % (app, path)
+	run('test -f %s && /bin/cat %s' % (file_path, file_path))
 
 def usage():
 	print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] [-P PATH]
