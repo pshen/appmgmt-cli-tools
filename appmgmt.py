@@ -28,6 +28,9 @@ def get_user(app):
 def get_jdk_bin(app):
 	return "/opt/as/java-%s/bin" % (app)
 
+def jinfo(app):
+	run('%s/jinfo `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+
 def jmap(app, dump="off", file="/dev/null"):
 	#with hide('running'):
 	if dump=="off":
@@ -61,7 +64,7 @@ def usage():
   -h, --help		display this help and exit
   -H, --host HOST	hostname -> fraapppas01.int.fra.net-m.internal
   -A, --app  APP	appname -> PAS-APP01
-  -T, --task TASK       task -> jmap/jstack/lsof/netstat/view
+  -T, --task TASK       task -> jinfo/jmap/jstack/lsof/netstat/view
   -P, --path PATH	path -> conf/server.xml"""
 
 def main(argv):
@@ -95,7 +98,9 @@ def main(argv):
 	global jdk_bin
 	jdk_bin=get_jdk_bin(app)
 	
-	if task=="jmap":
+	if task=="jinfo":
+		jinfo(app)
+	elif task=="jmap":
 		jmap(app)
 	elif task=="jstack":
 		jstack(app)
