@@ -52,7 +52,6 @@ def lsof(app):
 
 def usage():
 	print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] 
-Prints server host name.
 
   -h, --help		display this help and exit
   -H, --host HOST	hostname -> fraapppas01.int.fra.net-m.internal
@@ -67,10 +66,6 @@ def main(argv):
         	print >>sys.stderr, err
         	usage()
         	sys.exit(2)
-
-	host=""
-	app=""
-	task=""
 
 	for opt, arg in opts:
         	if opt in ("-h", "--help"):
@@ -94,6 +89,8 @@ def main(argv):
 		jmap(app)
 	elif task=="jstack":
 		jstack(app)
+	elif task=="lsof":
+		lsof(app)
 	else:
 		usage()
 		sys.exit()
