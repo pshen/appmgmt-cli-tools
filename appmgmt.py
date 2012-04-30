@@ -42,9 +42,12 @@ def jmap(app, dump="off", file="/dev/null"):
 
 #@task
 #@parallel(pool_size=4)
-def jstack(app):
+def jstack(app, force=false):
 	jdk_bin=get_jdk_bin(app)
-	run('%s/jstack `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+	if force:
+		run('%s/jstack -f `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+	else:
+		run('%s/jstack `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 
 def lsof(app):
 	jdk_bin=get_jdk_bin(app)
@@ -89,6 +92,8 @@ def main(argv):
 		jmap(app)
 	elif task=="jstack":
 		jstack(app)
+	elif taks=="jstack_with_force":
+		jstack(app, force=true)		
 	elif task=="lsof":
 		lsof(app)
 	else:
