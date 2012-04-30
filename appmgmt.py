@@ -2,6 +2,8 @@
 
 #####################################################
 # APP mgmt cli script
+# https://github.com/pshen/appmgmt-cli-tools
+#
 # inspired by https://github.com/mikeyk/ec2-cli-tools
 # Author: Chenjun Shen
 #####################################################
@@ -11,7 +13,7 @@ import sys
 import getopt
 
 from sys import stderr
-from fabric.api import run,get,env,task,parallel
+from fabric.api import run,get,env
 
 # SET SSH PRIVATE KEY LOCATION
 env.key_filename="/root/.ssh/id_rsa"
@@ -25,11 +27,7 @@ def get_user(app):
 def get_jdk_bin(app):
 	return "/opt/as/java-%s/bin" % (app)
 
-#@task
-#@parallel(pool_size=4)
-#@with_settings(warn_only=True)
 def jmap(app, dump="off", file="/dev/null"):
-	jdk_bin=get_jdk_bin(app)
 	#with hide('running'):
 	if dump=="off":
 		run('%s/jmap `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
@@ -40,18 +38,17 @@ def jmap(app, dump="off", file="/dev/null"):
 		get('%s.gz' % (dumpfname), local_path='%s.gz' % (dumpfname))
 		run('rm -f %s.gz' % (dumpfname))
 
-#@task
-#@parallel(pool_size=4)
 def jstack(app, force=False):
-	jdk_bin=get_jdk_bin(app)
 	if force:
 		run('%s/jstack -F `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 	else:
 		run('%s/jstack `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 
 def lsof(app):
-	jdk_bin=get_jdk_bin(app)
 	run('/usr/sbin/lsof -p `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
+
+def netstat(app):
+	run('/bin/netstat -anp | grep `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
 
 def usage():
 	print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] 
@@ -59,7 +56,7 @@ def usage():
   -h, --help		display this help and exit
   -H, --host HOST	hostname -> fraapppas01.int.fra.net-m.internal
   -A, --app  APP	appname -> PAS-APP01
-  -T, --task TASK       task -> jmap/jstack/lsof"""
+  -T, --task TASK       task -> jmap/jstack/lsof/netstat"""
 
 def main(argv):
 	try:
@@ -87,6 +84,7 @@ def main(argv):
 
 	env.host_string=host
 	env.user=get_user(app)
+	jdk_bin=get_jdk_bin(app)
 	
 	if task=="jmap":
 		jmap(app)
@@ -96,6 +94,8 @@ def main(argv):
 		jstack(app, force=True)		
 	elif task=="lsof":
 		lsof(app)
+	elif task=="netstat":
+		netstat(app)
 	else:
 		usage()
 		sys.exit()
