@@ -45,7 +45,7 @@ def jmap(app, dump="off", file="/dev/null"):
 def jstack(app, force=False):
 	jdk_bin=get_jdk_bin(app)
 	if force:
-		run('%s/jstack -f `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+		run('%s/jstack -F `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 	else:
 		run('%s/jstack `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 
