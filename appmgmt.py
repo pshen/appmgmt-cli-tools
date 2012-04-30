@@ -1,28 +1,26 @@
 #!/usr/local/bin/python
 
-########################
+#####################################################
 # APP mgmt cli script
 # inspired by https://github.com/mikeyk/ec2-cli-tools
 # Author: Chenjun Shen
-########################
+#####################################################
 
 import os
 import sys
 import getopt
 
 from sys import stderr
-
 from fabric.api import run,get,env,task,parallel
 
+# SET SSH PRIVATE KEY LOCATION
 env.key_filename="/root/.ssh/id_rsa"
 
-app_user_mapping = {'PAS':'pas', 'PECENG':'peceng'}
+# APP<->USER MAPPING
+APP_USER_MAPPING = {'PAS':'pas', 'PECENG':'peceng'}
 
 def get_user(app):
-	return app_user_mapping[app.split("-")[0]]
-
-def set_user(app):
-	env.user=get_user(app)
+	return APP_USER_MAPPING[app.split("-")[0]]
 
 def get_jdk_bin(app):
 	return "/opt/as/java-%s/bin" % (app)
@@ -31,7 +29,6 @@ def get_jdk_bin(app):
 #@parallel(pool_size=4)
 #@with_settings(warn_only=True)
 def jmap(app, dump="off", file="/dev/null"):
-	set_user(app)
 	jdk_bin=get_jdk_bin(app)
 	#with hide('running'):
 	if dump=="off":
@@ -46,17 +43,16 @@ def jmap(app, dump="off", file="/dev/null"):
 #@task
 #@parallel(pool_size=4)
 def jstack(app):
-	set_user(app)
 	jdk_bin=get_jdk_bin(app)
 	run('%s/jstack `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 
 def usage():
-	print >>stderr, """Usage: fabfile.py [-H HOST] [-A APP] [-T TASK] 
+	print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] 
 Prints server host name.
 
   -h, --help		display this help and exit
-  -H, --host HOST	planet hostname
-  -A, --app  APP	planet appname
+  -H, --host HOST	hostname -> fraapppas01.int.fra.net-m.internal
+  -A, --app  APP	appname -> PAS-APP01
   -T, --task TASK       task -> jmap/jstack"""
 
 def main(argv):
@@ -87,10 +83,7 @@ def main(argv):
 		usage()
                 sys.exit()
 
-	env.all_hosts=host.split(",")
-
-	print env.all_hosts
-
+	env.host_string=host
 	env.user=get_user(app)
 	
 	if task=="jmap":
