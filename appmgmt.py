@@ -1,11 +1,12 @@
 #!/usr/local/bin/python
-
+#
 #####################################################
 # APP mgmt cli script
 # https://github.com/pshen/appmgmt-cli-tools
 #
 # inspired by https://github.com/mikeyk/ec2-cli-tools
 # Author: Chenjun Shen
+#
 #####################################################
 
 import os
@@ -19,7 +20,7 @@ from fabric.api import run,get,env
 env.key_filename="/root/.ssh/id_rsa"
 
 # APP<->USER MAPPING
-APP_USER_MAPPING = {'PAS':'pas', 'PECENG':'peceng'}
+APP_USER_MAPPING = {'PAS':'pas', 'PECENG':'pec'}
 
 def get_user(app):
 	return APP_USER_MAPPING[app.split("-")[0]]
@@ -50,18 +51,22 @@ def lsof(app):
 def netstat(app):
 	run('/bin/netstat -anp | grep `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
 
+def view(app, path):
+	run('/bin/cat /opt/as/APP/%s/%s' % (app, path))
+
 def usage():
-	print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] 
+	print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] [-P PATH]
 
   -h, --help		display this help and exit
   -H, --host HOST	hostname -> fraapppas01.int.fra.net-m.internal
   -A, --app  APP	appname -> PAS-APP01
-  -T, --task TASK       task -> jmap/jstack/lsof/netstat"""
+  -T, --task TASK       task -> jmap/jstack/lsof/netstat/view
+  -P, --path PATH	path -> conf/server.xml"""
 
 def main(argv):
 	try:
-		opts, args = getopt.getopt(argv, "hH:A:T:",
-                                         ["help", "HOST=", "APP=", "TASK="])
+		opts, args = getopt.getopt(argv, "hH:A:T:P:",
+                                         ["help", "HOST=", "APP=", "TASK=", "PATH="])
 	except getopt.GetoptError, err:
         	print >>sys.stderr, err
         	usage()
@@ -77,10 +82,12 @@ def main(argv):
             		app = arg
         	elif opt in("-T", "--task"):
             		task = arg
+		elif opt in ("-P", "--PATH"):
+			path = arg
 
 	if not host or not app or not task:
 		usage()
-                sys.exit()
+                sys.exit(1)
 
 	env.host_string=host
 	env.user=get_user(app)
@@ -97,9 +104,11 @@ def main(argv):
 		lsof(app)
 	elif task=="netstat":
 		netstat(app)
+	elif task=="view":
+		view(app, path)
 	else:
 		usage()
-		sys.exit()
+		sys.exit(1)
 	
 if __name__ == "__main__":
 	main(sys.argv[1:])
