@@ -46,6 +46,10 @@ def jstack(app):
 	jdk_bin=get_jdk_bin(app)
 	run('%s/jstack `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 
+def lsof(app):
+	jdk_bin=get_jdk_bin(app)
+	run('/usr/sbin/lsof -p `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
+
 def usage():
 	print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] 
 Prints server host name.
@@ -53,7 +57,7 @@ Prints server host name.
   -h, --help		display this help and exit
   -H, --host HOST	hostname -> fraapppas01.int.fra.net-m.internal
   -A, --app  APP	appname -> PAS-APP01
-  -T, --task TASK       task -> jmap/jstack"""
+  -T, --task TASK       task -> jmap/jstack/lsof"""
 
 def main(argv):
 	try:
