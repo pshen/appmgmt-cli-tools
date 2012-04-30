@@ -92,7 +92,7 @@ def main(argv):
 		jmap(app)
 	elif task=="jstack":
 		jstack(app)
-	elif taks=="jstack_with_force":
+	elif task=="jstack_with_force":
 		jstack(app, force=True)		
 	elif task=="lsof":
 		lsof(app)
