@@ -31,9 +31,9 @@ def get_jdk_bin(app):
 def jinfo(app):
 	run('%s/jinfo `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 
-def jmap(app, dump="off", file="/dev/null"):
+def jmap(app, dump=False):
 	#with hide('running'):
-	if dump=="off":
+	if not dump:
 		run('%s/jmap `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
 	else:
 		dumpfname="/var/tmp/%s.%s.hprof" % (app, env.host)
@@ -64,7 +64,7 @@ def usage():
   -h, --help		display this help and exit
   -H, --host HOST	hostname -> fraapppas01.int.fra.net-m.internal
   -A, --app  APP	appname -> PAS-APP01
-  -T, --task TASK       task -> jinfo/jmap/jstack/lsof/netstat/view
+  -T, --task TASK       task -> jinfo/jmap/jmap_with_dump/jstack/jstack_with_force/lsof/netstat/view
   -P, --path PATH	path -> conf/server.xml"""
 
 def main(argv):
@@ -102,6 +102,8 @@ def main(argv):
 		jinfo(app)
 	elif task=="jmap":
 		jmap(app)
+	elif task=="jmap_with_dump":
+		jmap(app, dump=True) 
 	elif task=="jstack":
 		jstack(app)
 	elif task=="jstack_with_force":
