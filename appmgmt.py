@@ -94,6 +94,7 @@ def main(argv):
                 sys.exit(1)
 
 	env.host_string=host
+	env.host=host
 	env.user=get_user(app)
 	global jdk_bin
 	jdk_bin=get_jdk_bin(app)
