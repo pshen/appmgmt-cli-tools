@@ -4,7 +4,10 @@
 # APP mgmt cli script
 # https://github.com/pshen/appmgmt-cli-tools
 #
-# inspired by https://github.com/mikeyk/ec2-cli-tools
+# inspired by
+# a) https://github.com/mikeyk/ec2-cli-tools
+# b) https://gist.github.com/2307647 
+#
 # Author: Chenjun Shen
 #
 #####################################################
