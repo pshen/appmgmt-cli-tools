@@ -31,10 +31,10 @@ def get_user(app):
 def get_jdk_bin(app):
     return "/opt/as/java-%s/bin" % (app)
 
-def jinfo(app, para=None):
+def jinfo(app, para=""):
     run('%s/jinfo %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
 
-def jmap(app, dump=False, para=None):
+def jmap(app, dump=False, para=""):
     #with hide('running'):
     if not dump:
         run('%s/jmap %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
@@ -45,7 +45,7 @@ def jmap(app, dump=False, para=None):
         get('%s.gz' % (dumpfname), local_path='%s.gz' % (dumpfname))
         run('rm -f %s.gz' % (dumpfname))
 
-def jstack(app, force=False, para=None):
+def jstack(app, force=False, para=""):
     if force:
         run('%s/jstack %s -F `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
     else:
@@ -57,7 +57,7 @@ def lsof(app):
 def netstat(app):
     run('/bin/netstat -anp | grep `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
 
-def view(app, para):
+def view(app, para=""):
     file_path="/opt/as/APP/%s/%s" % (app, para)
     run('test -f %s && /bin/cat %s' % (file_path, file_path))
 
