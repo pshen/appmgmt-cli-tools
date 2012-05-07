@@ -2,7 +2,6 @@
 #
 #####################################################
 # APP mgmt cli script
-# https://github.com/pshen/appmgmt-cli-tools
 #
 # inspired by
 # a) https://github.com/mikeyk/ec2-cli-tools
@@ -31,31 +30,32 @@ def get_user(app):
 def get_jdk_bin(app):
     return "/opt/as/java-%s/bin" % (app)
 
-def jinfo(app, para=""):
-    run('%s/jinfo %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
+def get_pid(app):
+    print "GETTING PID OF APP=%s" % (app)
+    return run('%s/jps -v | awk \'/%s/{print $1}\'' % (jdk_bin, app))
 
-def jmap(app, dump=False, para=""):
+def jinfo(pid, para=""):
+    run('%s/jinfo %s %s' % (jdk_bin, para, pid))
+
+def jmap(pid, dump=False, para=""):
     #with hide('running'):
     if not dump:
-        run('%s/jmap %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
+        run('%s/jmap %s %s' % (jdk_bin, para, pid))
     else:
-        dumpfname="/var/tmp/%s.%s.hprof" % (app, env.host)
-        run('%s/jmap -dump:format=b,file=%s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, dumpfname, jdk_bin, app)) 
+        dumpfname="/var/tmp/%s.%s.hprof" % (pid, env.host)
+        run('%s/jmap -dump:format=b,file=%s %s' % (jdk_bin, dumpfname, pid)) 
         run('gzip -f %s' % (dumpfname))
         get('%s.gz' % (dumpfname), local_path='%s.gz' % (dumpfname))
         run('rm -f %s.gz' % (dumpfname))
 
-def jstack(app, force=False, para=""):
-    if force:
-        run('%s/jstack %s -F `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
-    else:
-        run('%s/jstack %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
+def jstack(pid, para=""):
+        run('%s/jstack %s %s' % (jdk_bin, para, pid))
 
-def lsof(app):
-    run('/usr/sbin/lsof -p `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
+def lsof(pid):
+    run('/usr/sbin/lsof -p %s' % (pid))
 
-def netstat(app):
-    run('/bin/netstat -anp | grep `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
+def netstat(pid):
+    run('/bin/netstat -anp | grep %s' % (pid))
 
 def view(app, para=""):
     file_path="/opt/as/APP/%s/%s" % (app, para)
@@ -103,21 +103,25 @@ def main(argv):
     env.user=get_user(app)
     global jdk_bin
     jdk_bin=get_jdk_bin(app)
-    
+
+    # getting pid
+    pid = get_pid(app)
+    if pid=="":
+        print "NO RUNNING INSTANCE"
+        sys.exit(2)
+
     if task=="jinfo":
-        jinfo(app, para)
+        jinfo(pid, para)
     elif task=="jmap":
-        jmap(app, False, para)
+        jmap(pid, False, para)
     elif task=="jmap_with_dump":
-        jmap(app, True, para) 
+        jmap(pid, True, para) 
     elif task=="jstack":
-        jstack(app, False, para)
-    elif task=="jstack_with_force":
-        jstack(app, True, para)        
+        jstack(pid, para)
     elif task=="lsof":
-        lsof(app)
+        lsof(pid)
     elif task=="netstat":
-        netstat(app)
+        netstat(pid)
     elif task=="view":
         view(app, para)
     else:
