@@ -31,13 +31,13 @@ def get_user(app):
 def get_jdk_bin(app):
     return "/opt/as/java-%s/bin" % (app)
 
-def jinfo(app):
-    run('%s/jinfo `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+def jinfo(app, para=None):
+    run('%s/jinfo %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
 
-def jmap(app, dump=False):
+def jmap(app, dump=False, para=None):
     #with hide('running'):
     if not dump:
-        run('%s/jmap `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+        run('%s/jmap %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
     else:
         dumpfname="/var/tmp/%s.%s.hprof" % (app, env.host)
         run('%s/jmap -dump:format=b,file=%s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, dumpfname, jdk_bin, app)) 
@@ -45,11 +45,11 @@ def jmap(app, dump=False):
         get('%s.gz' % (dumpfname), local_path='%s.gz' % (dumpfname))
         run('rm -f %s.gz' % (dumpfname))
 
-def jstack(app, force=False):
+def jstack(app, force=False, para=None):
     if force:
-        run('%s/jstack -F `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+        run('%s/jstack %s -F `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
     else:
-        run('%s/jstack `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, jdk_bin, app))
+        run('%s/jstack %s `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, para, jdk_bin, app))
 
 def lsof(app):
     run('/usr/sbin/lsof -p `%s/jps -v | awk \'/%s/{print $1}\'`' % (jdk_bin, app))
