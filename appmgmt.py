@@ -102,21 +102,21 @@ def main(argv):
     jdk_bin=get_jdk_bin(app)
     
     if task=="jinfo":
-        jinfo(app, para)
+        jinfo(app, para=para)
     elif task=="jmap":
-        jmap(app, para)
+        jmap(app, para=para)
     elif task=="jmap_with_dump":
-        jmap(app, dump=True, para) 
+        jmap(app, dump=True, para=para) 
     elif task=="jstack":
-        jstack(app, para)
+        jstack(app, para=para)
     elif task=="jstack_with_force":
-        jstack(app, force=True, para)        
+        jstack(app, force=True, para=para)        
     elif task=="lsof":
         lsof(app)
     elif task=="netstat":
         netstat(app)
     elif task=="view":
-        view(app, para)
+        view(app, para=para)
     else:
         usage()
         sys.exit(1)
