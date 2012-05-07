@@ -34,13 +34,13 @@ def get_pid(app):
     print "GETTING PID OF APP=%s" % (app)
     return run('%s/jps -v | awk \'/%s/{print $1}\'' % (jdk_bin, app))
 
-def jinfo(pid, para=""):
-    run('%s/jinfo %s %s' % (jdk_bin, para, pid))
+def jinfo(pid, optn=""):
+    run('%s/jinfo %s %s' % (jdk_bin, optn, pid))
 
-def jmap(pid, dump=False, para=""):
+def jmap(pid, dump=False, optn=""):
     #with hide('running'):
     if not dump:
-        run('%s/jmap %s %s' % (jdk_bin, para, pid))
+        run('%s/jmap %s %s' % (jdk_bin, optn, pid))
     else:
         dumpfname="/var/tmp/%s.%s.hprof" % (pid, env.host)
         run('%s/jmap -dump:format=b,file=%s %s' % (jdk_bin, dumpfname, pid)) 
@@ -48,8 +48,8 @@ def jmap(pid, dump=False, para=""):
         get('%s.gz' % (dumpfname), local_path='%s.gz' % (dumpfname))
         run('rm -f %s.gz' % (dumpfname))
 
-def jstack(pid, para=""):
-        run('%s/jstack %s %s' % (jdk_bin, para, pid))
+def jstack(pid, optn=""):
+        run('%s/jstack %s %s' % (jdk_bin, optn, pid))
 
 def lsof(pid):
     run('/usr/sbin/lsof -p %s' % (pid))
@@ -57,8 +57,8 @@ def lsof(pid):
 def netstat(pid):
     run('/bin/netstat -anp | grep %s' % (pid))
 
-def view(app, para=""):
-    file_path="/opt/as/APP/%s/%s" % (app, para)
+def view(app, optn=""):
+    file_path="/opt/as/APP/%s/%s" % (app, optn)
     run('test -f %s && /bin/cat %s' % (file_path, file_path))
 
 def usage():
@@ -67,19 +67,19 @@ def usage():
   -h, --help         display this help and exit
   -H, --host HOST    hostname -> fraapppas01.int.fra.net-m.internal
   -A, --app  APP     appname -> PAS-APP01
-  -T, --task TASK    task -> jinfo/jmap/jmap_with_dump/jstack/jstack_with_force/lsof/netstat/view
-  -P, --para PARA    para -> parameter send to the native cmd"""
+  -T, --task TASK    task -> jinfo/jmap/jmap_with_dump/jstack/lsof/netstat/view
+  -O, --optn OPTION  optn -> option sent to the native cmd"""
 
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, "hH:A:T:P:", ["help", "HOST=", "APP=", "TASK=", "PARA="])
+        opts, args = getopt.getopt(argv, "hH:A:T:O:", ["help", "host=", "app=", "task=", "optn="])
     except getopt.GetoptError, err:
         print >>sys.stderr, err
         usage()
         sys.exit(2)
 
     # init
-    para=""
+    optn=""
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -91,8 +91,8 @@ def main(argv):
             app = arg
         elif opt in("-T", "--task"):
             task = arg
-        elif opt in ("-P", "--para"):
-            para = arg
+        elif opt in ("-P", "--optn"):
+            optn = arg
 
     if not host or not app or not task:
         usage()
@@ -111,19 +111,19 @@ def main(argv):
         sys.exit(2)
 
     if task=="jinfo":
-        jinfo(pid, para)
+        jinfo(pid, optn)
     elif task=="jmap":
-        jmap(pid, False, para)
+        jmap(pid, False, optn)
     elif task=="jmap_with_dump":
-        jmap(pid, True, para) 
+        jmap(pid, True, optn) 
     elif task=="jstack":
-        jstack(pid, para)
+        jstack(pid, optn)
     elif task=="lsof":
         lsof(pid)
     elif task=="netstat":
         netstat(pid)
     elif task=="view":
-        view(app, para)
+        view(app, optn)
     else:
         usage()
         sys.exit(1)
