@@ -62,7 +62,7 @@ def view(app, optn=""):
     run('test -f %s && /bin/cat %s' % (file_path, file_path))
 
 def usage():
-    print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] [-P PATH]
+    print >>stderr, """Usage: appmgmt.py [-H HOST] [-A APP] [-T TASK] [-O OPTION]
 
   -h, --help         display this help and exit
   -H, --host HOST    hostname -> fraapppas01.int.fra.net-m.internal
@@ -91,7 +91,7 @@ def main(argv):
             app = arg
         elif opt in("-T", "--task"):
             task = arg
-        elif opt in ("-P", "--optn"):
+        elif opt in ("-O", "--optn"):
             optn = arg
 
     if not host or not app or not task:
