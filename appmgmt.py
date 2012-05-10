@@ -1,4 +1,5 @@
-#!/usr/local/bin/python
+#!/usr/bin/env python
+# Copyright 2012 Chenjun Shen
 #
 #####################################################
 # APP mgmt cli script
@@ -6,8 +7,6 @@
 # inspired by
 # a) https://github.com/mikeyk/ec2-cli-tools
 # b) https://gist.github.com/2307647 
-#
-# Author: Chenjun Shen
 #
 #####################################################
 
